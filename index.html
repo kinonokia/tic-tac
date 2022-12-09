@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Крестики нолики 2023</title>
+</head>
+
+<body>
+    <div class="main">
+
+        <div class="menu" v-show="showMenu">
+            <div class="menuTop">
+                <div>
+                    <p>КРЕСТИКИ-НОЛИКИ</p>
+                    <p>2023</p>
+                </div>
+            </div>
+            <div class="menuBoard">
+                <div class="goGame" @click="goToGame">Новая игра</div>
+                <div class="goStat" @click="goToStat">Статистика</div>
+                <div class="goRules" @click="goToRules">Правила</div>
+            </div>
+            <div class="menuFoot">
+                <a class="fb" href="https://www.facebook.com/kinonokia">
+                    <div>Facebook</div>
+                </a>
+                <a class="inst" href="https://www.instagram.com/kinonokia/">
+                    <div>Instagram</div>
+                </a>
+                <a class="tg" href="https://github.com/kinonokia">
+                    <div>GitHub</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="game" v-show="showGame">
+            <div class="gameTop">
+                <div @click="newGame">
+                    <pOne>{{result}}</pOne>
+                    <pTwo>{{clickForOneMore}}</pTwo>
+                </div>
+            </div>
+            <div class="gameBoard">
+                <div @click="userClick (0)">
+                    <p>{{desk [0]}}</p>
+                </div>
+                <div @click="userClick (1)">
+                    <p>{{desk [1]}}</p>
+                </div>
+                <div @click="userClick (2)">
+                    <p>{{desk [2]}}</p>
+                </div>
+                <div @click="userClick (3)">
+                    <p>{{desk [3]}}</p>
+                </div>
+                <div @click="userClick (4)">
+                    <p>{{desk [4]}}</p>
+                </div>
+                <div @click="userClick (5)">
+                    <p>{{desk [5]}}</p>
+                </div>
+                <div @click="userClick (6)">
+                    <p>{{desk [6]}}</p>
+                </div>
+                <div @click="userClick (7)">
+                    <p>{{desk [7]}}</p>
+                </div>
+                <div @click="userClick (8)">
+                    <p>{{desk [8]}}</p>
+                </div>
+            </div>
+            <div class="gameFoot">
+                <div @click="goToMain">меню</div>
+            </div>
+        </div>
+
+        <div class="stat" v-show="showStat">
+            <div class="statTop">
+                <div>Статистика</div>
+            </div>
+            <div class="statBoard">
+                <div>Победы:</div>
+                <div>{{xWinGames}}</div>
+                <div>Поражения:</div>
+                <div>{{oWinGames}}</div>
+                <div>Ничьи:</div>
+                <div>{{noWinGames}}</div>
+                <div>Общее количество игр:</div>
+                <div>{{totalGames}}</div>
+            </div>
+            <div class="statFoot">
+                <div @click="goToMain">меню</div>
+            </div>
+        </div>
+
+        <div class="rules" v-show="showRules">
+            <div class="rulesTop">
+                <div>Правила</div>
+            </div>
+            <div class="rulesBoard">
+                <div>
+                    <p>Игрок и компьютер по очереди ставят <br>на свободные клетки поля 3×3 <br>знаки <br>(игрок всегда
+                        крестики,<br>
+                        компьютер - всегда нолики). <br><br>Первый ход делает игрок. <br><br>Первый,
+                        выстроивший в ряд 3 своих фигуры по вертикали, горизонтали или
+                        диагонали, выигрывает.
+                    </p>
+                </div>
+            </div>
+            <div class="rulesFoot">
+                <div class="inMenu" @click="goToMain">меню</div>
+            </div>
+        </div>
+
+    </div>
+    <script src="js/vue.js"></script>
+    <script>
+        let app = new Vue({
+            el: '.main',
+            data: {
+                showMenu: true,
+                showGame: false,
+                showStat: false,
+                showRules: false,
+                desk: ['', '', '', '', '', '', '', '', ''],
+                stepCount: 0,
+                result: "Новая игра",
+                clickForOneMore: "Чтобы начать заново, можно кликнуть здесь",
+                gameN: true,
+
+                totalGames: localStorage.getItem('totalGames') ? localStorage.getItem('totalGames') : 0,
+                xWinGames: localStorage.getItem('xWinGames') ? localStorage.getItem('xWinGames') : 0,
+                oWinGames: localStorage.getItem('oWinGames') ? localStorage.getItem('oWinGames') : 0,
+                noWinGames: localStorage.getItem('noWinGames') ? localStorage.getItem('noWinGames') : 0,
+            },
+
+            methods: {
+
+                goToMain() {
+                    this.showMenu = true
+                    this.showGame = false
+                    this.showStat = false
+                    this.showRules = false
+                },
+
+                goToGame() {
+                    this.showMenu = false
+                    this.showGame = true
+                    this.showStat = false
+                    this.showRules = false
+                },
+
+                goToStat() {
+                    this.showMenu = false
+                    this.showGame = false
+                    this.showStat = true
+                    this.showRules = false
+                },
+
+                goToRules() {
+                    this.showMenu = false
+                    this.showGame = false
+                    this.showStat = false
+                    this.showRules = true
+                },
+
+                userClick(n) {
+                    if (this.gameN == true) {
+                        if (this.desk[n] == '') {
+                            this.desk[n] = "x"
+                            this.stepCount++
+
+                            if (
+                                this.desk[0] == 'x' && this.desk[1] == 'x' && this.desk[2] == 'x' ||
+                                this.desk[3] == 'x' && this.desk[4] == 'x' && this.desk[5] == 'x' ||
+                                this.desk[6] == 'x' && this.desk[7] == 'x' && this.desk[8] == 'x' ||
+                                this.desk[0] == 'x' && this.desk[3] == 'x' && this.desk[6] == 'x' ||
+                                this.desk[1] == 'x' && this.desk[4] == 'x' && this.desk[7] == 'x' ||
+                                this.desk[2] == 'x' && this.desk[5] == 'x' && this.desk[8] == 'x' ||
+                                this.desk[0] == 'x' && this.desk[4] == 'x' && this.desk[8] == 'x' ||
+                                this.desk[2] == 'x' && this.desk[4] == 'x' && this.desk[6] == 'x') {
+                                this.endXWinGame();
+                            } else { this.robotClick() }
+
+                        }
+                        else {
+                            alert("Ячейка занята! Попробуйте другую ячейку.")
+                            userClick(n)
+                        }
+
+                    }
+                },
+
+                robotClick() {
+                    if (this.gameN == true) {
+                        if (this.stepCount == this.desk.length) {
+                            this.endNoWinGame()
+                        }
+                        else {
+                            rand = (Math.floor(Math.random() * this.desk.length));
+                            if (this.desk[rand] == '') {
+                                this.desk[rand] = "o"
+                                this.stepCount++
+                                if (
+                                    this.desk[0] == 'o' && this.desk[1] == 'o' && this.desk[2] == 'o' ||
+                                    this.desk[3] == 'o' && this.desk[4] == 'o' && this.desk[5] == 'o' ||
+                                    this.desk[6] == 'o' && this.desk[7] == 'o' && this.desk[8] == 'o' ||
+                                    this.desk[0] == 'o' && this.desk[3] == 'o' && this.desk[6] == 'o' ||
+                                    this.desk[1] == 'o' && this.desk[4] == 'o' && this.desk[7] == 'o' ||
+                                    this.desk[2] == 'o' && this.desk[5] == 'o' && this.desk[8] == 'o' ||
+                                    this.desk[0] == 'o' && this.desk[4] == 'o' && this.desk[8] == 'o' ||
+                                    this.desk[2] == 'o' && this.desk[4] == 'o' && this.desk[6] == 'o') {
+                                    this.endOWinGame();
+                                }
+                            } else { this.robotClick() }
+                        }
+                        this.$forceUpdate();
+                    }
+                },
+
+                endXWinGame() {
+                    if (this.desk[0] == 'x' && this.desk[1] == 'x' && this.desk[2] == 'x') {
+                        this.desk[0] = 'X', this.desk[1] = 'X', this.desk[2] = 'X'
+                    };
+                    if (this.desk[3] == 'x' && this.desk[4] == 'x' && this.desk[5] == 'x') {
+                        this.desk[3] = 'X', this.desk[4] = 'X', this.desk[5] = 'X'
+                    };
+                    if (this.desk[6] == 'x' && this.desk[7] == 'x' && this.desk[8] == 'x') {
+                        this.desk[6] = 'X', this.desk[7] = 'X', this.desk[8] = 'X'
+                    };
+                    if (this.desk[0] == 'x' && this.desk[3] == 'x' && this.desk[6] == 'x') {
+                        this.desk[0] = 'X', this.desk[3] = 'X', this.desk[6] = 'X'
+                    };
+                    if (this.desk[1] == 'x' && this.desk[4] == 'x' && this.desk[7] == 'x') {
+                        this.desk[1] = 'X', this.desk[4] = 'X', this.desk[7] = 'X'
+                    };
+                    if (this.desk[2] == 'x' && this.desk[5] == 'x' && this.desk[8] == 'x') {
+                        this.desk[2] = 'X', this.desk[5] = 'X', this.desk[8] = 'X'
+                    };
+                    if (this.desk[0] == 'x' && this.desk[4] == 'x' && this.desk[8] == 'x') {
+                        this.desk[0] = 'X', this.desk[4] = 'X', this.desk[8] = 'X'
+                    };
+                    if (this.desk[2] == 'x' && this.desk[4] == 'x' && this.desk[6] == 'x') {
+                        this.desk[2] = 'X', this.desk[4] = 'X', this.desk[6] = 'X'
+                    };
+                    this.totalGames++;
+                    localStorage.setItem('totalGames', this.totalGames);
+                    this.xWinGames++;
+                    localStorage.setItem('xWinGames', this.xWinGames);
+                    this.result = "Вы выиграли!";
+                    this.clickForOneMore = "Кликните здесь, чтобы сыграть ещё один раз";
+                    this.gameN = false;
+                },
+
+                endOWinGame() {
+                    if (this.desk[0] == 'o' && this.desk[1] == 'o' && this.desk[2] == 'o') {
+                        this.desk[0] = 'O', this.desk[1] = 'O', this.desk[2] = 'O'
+                    };
+                    if (this.desk[3] == 'o' && this.desk[4] == 'o' && this.desk[5] == 'o') {
+                        this.desk[3] = 'O', this.desk[4] = 'O', this.desk[5] = 'O'
+                    };
+                    if (this.desk[6] == 'o' && this.desk[7] == 'o' && this.desk[8] == 'o') {
+                        this.desk[6] = 'O', this.desk[7] = 'O', this.desk[8] = 'O'
+                    };
+                    if (this.desk[0] == 'o' && this.desk[3] == 'o' && this.desk[6] == 'o') {
+                        this.desk[0] = 'O', this.desk[3] = 'O', this.desk[6] = 'O'
+                    };
+                    if (this.desk[1] == 'o' && this.desk[4] == 'o' && this.desk[7] == 'o') {
+                        this.desk[1] = 'O', this.desk[4] = 'O', this.desk[7] = 'O'
+                    };
+                    if (this.desk[2] == 'o' && this.desk[5] == 'o' && this.desk[8] == 'o') {
+                        this.desk[2] = 'O', this.desk[5] = 'O', this.desk[8] = 'O'
+                    };
+                    if (this.desk[0] == 'o' && this.desk[4] == 'o' && this.desk[8] == 'o') {
+                        this.desk[0] = 'O', this.desk[4] = 'O', this.desk[8] = 'O'
+                    };
+                    if (this.desk[2] == 'o' && this.desk[4] == 'o' && this.desk[6] == 'o') {
+                        this.desk[2] = 'O', this.desk[4] = 'O', this.desk[6] = 'O'
+                    };
+                    this.totalGames++;
+                    localStorage.setItem('totalGames', this.totalGames);
+                    this.oWinGames++;
+                    localStorage.setItem('oWinGames', this.oWinGames);
+                    this.result = "Вы проиграли!";
+                    this.clickForOneMore = "Кликните здесь, чтобы попробовать снова";
+                    this.gameN = false;
+                },
+
+                endNoWinGame() {
+                    this.totalGames++;
+                    localStorage.setItem('totalGames', this.totalGames);
+                    this.noWinGames++;
+                    localStorage.setItem('noWinGames', this.noWinGames);
+                    this.result = "Ничья!";
+                    this.clickForOneMore = "Кликните здесь, чтобы попробовать снова";
+                    this.gameN = false;
+                },
+
+                newGame() {
+                    this.desk = ['', '', '', '', '', '', '', '', ''];
+                    this.stepCount = 0;
+                    this.result = "Новая игра"
+                    this.clickForOneMore = "Чтобы начать заново, можно кликнуть здесь";
+                    this.gameN = true;
+                },
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>
